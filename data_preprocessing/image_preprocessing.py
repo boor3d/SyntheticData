@@ -1,6 +1,10 @@
 import tensorflow as tf
 import numpy as np
 
+import tensorflow as tf
+import numpy as np
+import pandas as pd
+
 def image_preprocess(df, batch_size=64, normalization_range=(-1, 1)):
     # Check if images are numpy arrays and normalize them
     normalized_images = []
@@ -19,3 +23,23 @@ def image_preprocess(df, batch_size=64, normalization_range=(-1, 1)):
 
     return train_dataset
 
+
+
+def batch_dataset_to_dataframe(batch_dataset):
+    images = []
+    labels = []
+
+    # Iterate through the BatchDataset
+    for batch in batch_dataset:
+        print (batch)
+        break
+        batch_images, batch_labels = batch
+        # Flatten the images if necessary and add to the list
+        images.extend(batch_images.numpy().reshape(batch_images.shape[0], -1))  # Reshaping to flatten the images
+        labels.extend(batch_labels.numpy())
+
+    # Create a DataFrame
+    df = pd.DataFrame(images)
+    df['label'] = labels  # Assuming 'labels' are your target values
+
+    return df

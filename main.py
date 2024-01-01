@@ -4,8 +4,8 @@ import pandas as pd
 import numpy as np
 import tensorflow as tf
 from data_ingestion.dataset_loader import load_huggingface_dataset
-from data_preprocessing.image_preprocessing import image_preprocess
-from generative_models.train_gan import train
+from data_preprocessing.image_preprocessing import image_preprocess, batch_dataset_to_dataframe
+from generative_models.GAN.train_gan import train
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -27,22 +27,31 @@ def main():
 
         data = load_huggingface_dataset(args.dataset_name, library=True)
         
-        data = data.sample(n=10000, replace=False)
+        original_data = data.sample(n=1000, replace=False)
+
+        # Write to csv for analysis 
+        original_data.to_csv("./notebooks/data/data.csv", index=False)
+
         
 
         if args.datatype == "image":
-            train_data = image_preprocess(data)
+            train_data = image_preprocess(original_data)
+
+
+            train_data_df = batch_dataset_to_dataframe(train_data)
+            # Write to csv for analysis 
+            train_data_df.to_csv("./notebooks/data/train_data.csv", index=False)
 
 
             # Batch and shuffle the data
-            buffer_size = 600
-            batch_size = 64
+            buffer_size = 10
+            batch_size = 32
             train_dataset = train_data
 
             print(f"Training Data: {train_data}")
 
             # Training parameters
-            epochs = 5000
+            epochs = 300
             noise_dim = 100
 
             # Start training
