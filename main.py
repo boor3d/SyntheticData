@@ -3,19 +3,13 @@ import argparse
 import pandas as pd
 import numpy as np
 import tensorflow as tf
-from data_ingestion.dataset_loader import load_dataset
+from data_ingestion.dataset_loader import load_huggingface_dataset
 from data_preprocessing.image_preprocessing import image_preprocess
 from generative_models.train_gan import train
 import warnings
 warnings.filterwarnings('ignore')
 
 def main():
-
-    if tf.config.list_physical_devices('GPU'):
-        print("GPU is available")
-    else:
-        print("GPU is not available")
-
 
     parser = argparse.ArgumentParser(description='Load datasets from local file, library, or URL')
     parser.add_argument('--source', type=str, choices=['local', 'library', 'url'], required=True, help='Dataset source type')
@@ -31,7 +25,10 @@ def main():
     if args.source == 'library':
 
 
-        data = load_dataset(args.dataset_name, library=True)
+        data = load_huggingface_dataset(args.dataset_name, library=True)
+        
+        data = data.sample(n=10000, replace=False)
+        
 
         if args.datatype == "image":
             train_data = image_preprocess(data)
@@ -45,13 +42,12 @@ def main():
             print(f"Training Data: {train_data}")
 
             # Training parameters
-            epochs = 50
+            epochs = 5000
             noise_dim = 100
 
             # Start training
             train(train_dataset, epochs, batch_size, noise_dim)
 
-   
 
     return
 

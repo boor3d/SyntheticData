@@ -1,5 +1,8 @@
 import tensorflow as tf
 from keras import layers
+import numpy as np
+import tensorflow as tf
+from keras import layers, models
 
 def build_generator():
     model = tf.keras.Sequential()
@@ -18,4 +21,6 @@ def build_generator():
 
     model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
     return model
+
+
 

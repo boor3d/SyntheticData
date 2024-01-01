@@ -1,6 +1,6 @@
 import tensorflow as tf
-from tensorflow.keras.losses import BinaryCrossentropy
-from tensorflow.keras.optimizers import Adam
+from keras.losses import BinaryCrossentropy
+from keras.optimizers import Adam
 from .generator import build_generator
 from .discriminator import build_discriminator
 from .gan import build_gan
@@ -104,4 +104,3 @@ def train(dataset, epochs, batch_size, noise_dim):
 
     return generator, discriminator
 
-# Use this function to train your GAN with the appropriate dataset and parameters

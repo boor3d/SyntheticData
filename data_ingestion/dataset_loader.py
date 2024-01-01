@@ -1,23 +1,33 @@
-import tensorflow_datasets as tfds
+from datasets import load_dataset
 import pandas as pd
+import numpy as np
 
-def load_dataset(dataset_name, library=False):
-    if library:
-        # Load the specified TensorFlow dataset
-        dataset, info = tfds.load(dataset_name, with_info=True, as_supervised=True)
+def process_images(df):
+    processed_images = []
 
-        # Select a specific split, e.g., 'train'
-        train_data = dataset['train'].take(10000)  # Adjust the number of samples as needed
+    for image in df['image']:
+        # Convert PIL image to numpy array and reshape to (28, 28, 1)
+        image_array = np.array(image).reshape(28, 28, 1)
+        processed_images.append(image_array)
 
-        # Initialize lists for images and labels
-        images, labels = [], []
+    # Replace the 'image' column in the DataFrame
+    df['image'] = processed_images
+    return df
 
-        # Iterate over the dataset and convert to numpy arrays
-        for image, label in tfds.as_numpy(train_data):
-            images.append(image)
-            labels.append(label)
+def load_huggingface_dataset(dataset_name, library=True):
+    
+    # Load the entire dataset
+    dataset = load_dataset(dataset_name)
 
-        # Create a DataFrame
-        df = pd.DataFrame({'image': images, 'label': labels})
+    # The dataset can be a DatasetDict with multiple splits, or a single Dataset
+    if isinstance(dataset, dict):
+        # If it's a DatasetDict, you can concatenate the splits, or choose one
+        # For example, concatenate train and test splits
+        dataset = pd.concat([pd.DataFrame(dataset[split]) for split in dataset.keys()])
+    else:
+        # Convert to pandas DataFrame
+        dataset = pd.DataFrame(dataset)
 
-        return df 
+    dataset_processed = process_images(dataset)
+
+    return dataset_processed
