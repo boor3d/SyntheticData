@@ -51,7 +51,7 @@ def main():
             print(f"Training Data: {train_data}")
 
             # Training parameters
-            epochs = 300
+            epochs = 2000
             noise_dim = 100
 
             # Start training
